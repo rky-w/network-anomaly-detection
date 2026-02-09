@@ -24,7 +24,7 @@ def run_ensemble_pipeline(df):
     level_shift_ad = LevelShiftAD(window=config['level_shift_window'], c=config['level_shift_threshold'])
     level_anomalies = level_shift_ad.fit_predict(df)
 
-    pelt_ad = PELTAD(penalty=config['pelt_penalty'], seasonal_decomposition=config['pelt_seasonal_decomposition'])
+    pelt_ad = PELTAD(penalty=config['pelt_penalty'], seasonal_decomposition=config['seasonal_decomposition'])
     pelt_anomalies = pelt_ad.fit_predict(df)                                                                            
 
 
