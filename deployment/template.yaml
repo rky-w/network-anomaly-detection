@@ -1,0 +1,76 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Network Anomaly Detection - Serverless Deployment
+
+Resources:
+  # DynamoDB table for network metrics
+  MetricsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: NetworkMetrics
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: timestamp
+          AttributeType: S
+      KeySchema:
+        - AttributeName: timestamp
+          KeyType: HASH
+      TimeToLiveSpecification:
+        Enabled: true
+        AttributeName: ttl  # Auto-delete old data after 7 days
+
+  # DynamoDB table for detected anomalies
+  AnomaliesTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: NetworkAnomalies
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: metric
+          AttributeType: S
+        - AttributeName: timestamp
+          AttributeType: S
+      KeySchema:
+        - AttributeName: metric
+          KeyType: HASH
+        - AttributeName: timestamp
+          KeyType: RANGE
+
+  # Lambda function for anomaly detection
+  AnomalyDetectorFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: NetworkAnomalyDetector
+      CodeUri: ../
+      Handler: deployment.lambda_handler.lambda_handler
+      Runtime: python3.11
+      Timeout: 300  # 5 minutes
+      MemorySize: 512
+      Environment:
+        Variables:
+          DYNAMODB_TABLE: !Ref MetricsTable
+          ANOMALIES_TABLE: !Ref AnomaliesTable
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref MetricsTable
+        - DynamoDBCrudPolicy:
+            TableName: !Ref AnomaliesTable
+      Events:
+        ScheduledExecution:
+          Type: Schedule
+          Properties:
+            Schedule: rate(5 minutes)
+            Description: Trigger anomaly detection every 5 minutes
+
+Outputs:
+  MetricsTableName:
+    Description: DynamoDB table for network metrics
+    Value: !Ref MetricsTable
+  
+  AnomaliesTableName:
+    Description: DynamoDB table for detected anomalies
+    Value: !Ref AnomaliesTable
+  
+  FunctionArn:
+    Description: Lambda function ARN
+    Value: !GetAtt AnomalyDetectorFunction.Arn

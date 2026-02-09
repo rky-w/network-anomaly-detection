@@ -1,0 +1,6 @@
+# Lambda deployment requirements
+boto3>=1.26.0
+pandas>=2.0.0
+numpy>=1.24.0
+adtk>=0.6.2
+ruptures>=1.1.8
