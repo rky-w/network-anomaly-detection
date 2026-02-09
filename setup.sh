@@ -16,7 +16,7 @@ fi
 # Check if pyproject.toml exists
 if [[ ! -f "pyproject.toml" ]]; then
     echo "pyproject.toml not found!"
-    echo "Ensure this script is ran from the project root directory."
+    # echo "Ensure this script is ran from the project root directory."
     exit 1
 fi
 
