@@ -76,7 +76,7 @@ class PELTAD:
             result = algo.predict(pen=self.penalty)
             
             # Create boolean anomaly series marking detected changepoints
-            pred_anomalies = pd.Series(index=series.index).fillna(False)
+            pred_anomalies = pd.Series(index=series.index).astype("boolean").fillna(False)
             pred_anomalies.iloc[result[:-1]] = True
             
             anomalies[col] = pred_anomalies

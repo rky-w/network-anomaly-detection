@@ -66,7 +66,7 @@ def generate_point_anomalies(df, num_anomalies=10):
             df_anomalous.at[idx, 'error_rate'] = min(df_anomalous.at[idx, 'error_rate'] + np.random.uniform(0.1, 0.5), 1)  # Spike in error rate
             anomaly_flags.at[idx, 'error_rate'] = True
     
-    return df_anomalous, anomaly_flags.fillna(False)
+    return df_anomalous, anomaly_flags.astype("boolean").fillna(False)
 
 
 def generate_level_anomalies(df, num_anomalies=1):
@@ -124,7 +124,7 @@ def generate_level_anomalies(df, num_anomalies=1):
         anomaly_flags.loc[df.index[start_pos], ['bytes_in', 'bytes_out', 'error_rate']] = True
         anomaly_flags.loc[df.index[np.minimum(end_pos, len(df)-1)], ['bytes_in', 'bytes_out', 'error_rate']] = True
     
-    return df_anomalous, anomaly_flags.fillna(False)
+    return df_anomalous, anomaly_flags.astype("boolean").fillna(False)
 
 
 def generate_trend_anomalies(df):
@@ -152,5 +152,5 @@ def generate_trend_anomalies(df):
         if i == 0:
             anomaly_flags.loc[pos, 'error_rate'] = True
 
-    return df_anomalous, anomaly_flags.fillna(False)
+    return df_anomalous, anomaly_flags.astype("boolean").fillna(False)
 

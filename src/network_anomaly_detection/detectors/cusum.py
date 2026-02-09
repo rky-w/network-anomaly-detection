@@ -89,7 +89,7 @@ class CUSUMAD:
             
             anomalies[col] = pred_anomalies
         
-        return anomalies
+        return anomalies.astype("boolean")
     
     def fit_predict(self, df):
         return self.fit(df).predict(df)
