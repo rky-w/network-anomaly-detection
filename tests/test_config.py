@@ -14,6 +14,7 @@ class TestConfig:
     def test_config_has_required_keys(self):
         """Test that all required configuration keys are present"""
         required_keys = [
+            'seasonal_decomposition',
             'persist_window',
             'persist_threshold',
             'seasonal_freq',
@@ -21,7 +22,6 @@ class TestConfig:
             'level_shift_window',
             'level_shift_threshold',
             'pelt_penalty',
-            'pelt_seasonal_decomposition',
             'isolation_forest_contamination'
         ]
         for key in required_keys:
@@ -29,6 +29,7 @@ class TestConfig:
 
     def test_config_values_are_valid_types(self):
         """Test that config values have expected types"""
+        assert isinstance(config['seasonal_decomposition'], bool)
         assert isinstance(config['persist_window'], int)
         assert isinstance(config['persist_threshold'], int)
         assert isinstance(config['seasonal_freq'], int)
@@ -36,7 +37,6 @@ class TestConfig:
         assert isinstance(config['level_shift_window'], int)
         assert isinstance(config['level_shift_threshold'], (int, float))
         assert isinstance(config['pelt_penalty'], int)
-        assert isinstance(config['pelt_seasonal_decomposition'], bool)
         assert isinstance(config['isolation_forest_contamination'], float)
 
     def test_config_values_are_positive(self):

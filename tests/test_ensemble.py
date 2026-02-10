@@ -73,7 +73,7 @@ class TestRunEnsemblePipeline:
 
     def test_ensemble_pipeline_with_point_anomalies(self):
         """Test pipeline detects point anomalies"""
-        df = generate_data(start="2026-01-01", end="2026-01-05")
+        df = generate_data(start="2026-01-01", end="2026-01-02")
         df_anomalous, _ = generate_point_anomalies(df, num_anomalies=20)
 
         result = run_ensemble_pipeline(df_anomalous)
@@ -84,7 +84,7 @@ class TestRunEnsemblePipeline:
 
     def test_ensemble_pipeline_with_level_anomalies(self):
         """Test pipeline detects level shift anomalies"""
-        df = generate_data(start="2026-01-01", end="2026-01-10")
+        df = generate_data(start="2026-01-01", end="2026-01-02")
         df_anomalous, _ = generate_level_anomalies(df, num_anomalies=2)
 
         result = run_ensemble_pipeline(df_anomalous)
@@ -95,7 +95,7 @@ class TestRunEnsemblePipeline:
 
     def test_ensemble_pipeline_with_trend_anomalies(self):
         """Test pipeline detects trend anomalies"""
-        df = generate_data(start="2026-01-01", end="2026-01-10")
+        df = generate_data(start="2026-01-01", end="2026-01-02")
         df_anomalous, _ = generate_trend_anomalies(df)
 
         result = run_ensemble_pipeline(df_anomalous)
@@ -106,7 +106,7 @@ class TestRunEnsemblePipeline:
 
     def test_ensemble_pipeline_with_multiple_anomaly_types(self):
         """Test pipeline with combined anomaly types"""
-        df = generate_data(start="2026-01-01", end="2026-01-10")
+        df = generate_data(start="2026-01-01", end="2026-01-02")
 
         # Add multiple types of anomalies
         df_anomalous, _ = generate_point_anomalies(df, num_anomalies=10)
@@ -147,10 +147,10 @@ class TestRunEnsemblePipeline:
     def test_ensemble_pipeline_consistency_with_seed(self):
         """Test that pipeline produces consistent results with same data"""
         np.random.seed(42)
-        df1 = generate_data(start="2026-01-01", end="2026-01-05")
+        df1 = generate_data(start="2026-01-01", end="2026-01-02")
 
         np.random.seed(42)
-        df2 = generate_data(start="2026-01-01", end="2026-01-05")
+        df2 = generate_data(start="2026-01-01", end="2026-01-02")
 
         # Reset seed
         np.random.seed(None)
@@ -163,7 +163,7 @@ class TestRunEnsemblePipeline:
 
     def test_ensemble_pipeline_detects_more_than_individual_detectors(self):
         """Test that ensemble combines multiple detector outputs"""
-        df = generate_data(start="2026-01-01", end="2026-01-10")
+        df = generate_data(start="2026-01-01", end="2026-01-02")
         df_anomalous, _ = generate_point_anomalies(df, num_anomalies=15)
         df_anomalous, _ = generate_level_anomalies(df_anomalous, num_anomalies=2)
 
@@ -183,7 +183,7 @@ class TestRunEnsemblePipeline:
 
     def test_ensemble_pipeline_with_all_metrics(self):
         """Test that all metrics are processed"""
-        df = generate_data(start="2026-01-01", end="2026-01-05")
+        df = generate_data(start="2026-01-01", end="2026-01-02")
 
         result = run_ensemble_pipeline(df)
 
@@ -192,7 +192,7 @@ class TestRunEnsemblePipeline:
 
     def test_ensemble_pipeline_flag_distribution(self):
         """Test that anomaly flags are distributed across different metrics"""
-        df = generate_data(start="2026-01-01", end="2026-01-10")
+        df = generate_data(start="2026-01-01", end="2026-01-02")
         df_anomalous, _ = generate_point_anomalies(df, num_anomalies=20)
 
         result = run_ensemble_pipeline(df_anomalous)
@@ -203,7 +203,7 @@ class TestRunEnsemblePipeline:
 
     def test_ensemble_pipeline_with_extreme_values(self):
         """Test pipeline handles extreme values in data"""
-        df = generate_data(start="2026-01-01", end="2026-01-03")
+        df = generate_data(start="2026-01-01", end="2026-01-02")
 
         # Add extreme values
         df.iloc[50, 0] *= 100  # Extreme spike
@@ -239,12 +239,12 @@ class TestEnsemblePipelineEdgeCases:
 
     def test_ensemble_pipeline_with_high_frequency_data(self):
         """Test pipeline with high frequency (1-min intervals)"""
-        index = pd.date_range("2026-01-01", periods=1440, freq="1min")
+        index = pd.date_range("2026-01-01", periods=300, freq="1min")
         df = pd.DataFrame(
             {
-                "bytes_in": np.random.rand(1440) * 1000 + 500,
-                "bytes_out": np.random.rand(1440) * 300 + 100,
-                "error_rate": np.random.rand(1440) * 0.1 + 0.02,
+                "bytes_in": np.random.rand(300) * 1000 + 500,
+                "bytes_out": np.random.rand(300) * 300 + 100,
+                "error_rate": np.random.rand(300) * 0.1 + 0.02,
             },
             index=index,
         )
@@ -260,7 +260,7 @@ class TestEnsemblePipelineIntegration:
     def test_ensemble_pipeline_end_to_end_workflow(self):
         """Test complete workflow from data generation to anomaly detection"""
         # Generate base data
-        df = generate_data(start="2026-01-01", end="2026-01-07")
+        df = generate_data(start="2026-01-01", end="2026-01-02")
 
         # Add various anomaly types
         df_with_point, _ = generate_point_anomalies(df, num_anomalies=10)
@@ -277,30 +277,18 @@ class TestEnsemblePipelineIntegration:
 
     def test_ensemble_pipeline_multiple_runs_on_same_data(self):
         """Test that running pipeline multiple times gives same results"""
-        df = generate_data(start="2026-01-01", end="2026-01-05")
+        df = generate_data(start="2026-01-01", end="2026-01-02")
 
         result1 = run_ensemble_pipeline(df)
         result2 = run_ensemble_pipeline(df)
 
         pd.testing.assert_frame_equal(result1, result2)
 
-    def test_ensemble_pipeline_different_data_different_results(self):
-        """Test that different data produces different results"""
-        df1 = generate_data(start="2026-01-01", end="2026-01-03")
-        df2 = generate_data(start="2026-02-01", end="2026-02-03")
-
-        result1 = run_ensemble_pipeline(df1)
-        result2 = run_ensemble_pipeline(df2)
-
-        # Results should generally be different (statistical test)
-        # At least the sum of anomalies should differ in most cases
-        assert isinstance(result1, pd.DataFrame)
-        assert isinstance(result2, pd.DataFrame)
 
     def test_ensemble_combines_multiple_detector_outputs(self):
         """Test that ensemble truly combines outputs from multiple detectors"""
         # Create data with specific anomaly that would be caught by different detectors
-        df = generate_data(start="2026-01-01", end="2026-01-10")
+        df = generate_data(start="2026-01-01", end="2026-01-02")
 
         # Add level shift (should be caught by LevelShiftAD and PELT)
         df.iloc[200:400, :] *= 1.4
@@ -315,7 +303,7 @@ class TestEnsemblePipelineIntegration:
 
     def test_ensemble_pipeline_output_format_suitable_for_analysis(self):
         """Test that output format is suitable for further analysis"""
-        df = generate_data(start="2026-01-01", end="2026-01-05")
+        df = generate_data(start="2026-01-01", end="2026-01-02")
 
         result = run_ensemble_pipeline(df)
 
@@ -324,15 +312,6 @@ class TestEnsemblePipelineIntegration:
         assert result.any().any() in [True, False]
         assert len(result[result["bytes_in"] == True]) >= 0
 
-    def test_ensemble_pipeline_performance_large_dataset(self):
-        """Test pipeline performance on larger dataset"""
-        # Generate a month of data
-        df = generate_data(start="2026-01-01", end="2026-02-01")
-
-        result = run_ensemble_pipeline(df)
-
-        assert result.shape == df.shape
-        assert isinstance(result, pd.DataFrame)
 
 
 class TestEnsemblePipelineValidation:

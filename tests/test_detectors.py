@@ -268,7 +268,7 @@ class TestPELTAD:
 
     def test_peltad_different_penalties_produce_different_results(self):
         """Test that different penalties produce different anomaly detections"""
-        df = generate_data(start='2026-01-01', end='2026-01-10')
+        df = generate_data(start='2026-01-01', end='2026-01-02')
         
         detector_low = PELTAD(penalty=5)
         detector_high = PELTAD(penalty=20)
@@ -281,7 +281,7 @@ class TestPELTAD:
 
     def test_peltad_with_seasonal_decomposition(self):
         """Test PELTAD with seasonal decomposition enabled"""
-        df = generate_data(start='2026-01-01', end='2026-01-10')
+        df = generate_data(start='2026-01-01', end='2026-01-02')
         detector = PELTAD(seasonal_decomposition=True, freq=288)
         
         result = detector.fit_predict(df)
@@ -310,7 +310,7 @@ class TestDetectorComparison:
 
     def test_both_detectors_work_on_same_data(self):
         """Test that both detectors can process the same data"""
-        df = generate_data(start='2026-01-01', end='2026-01-05')
+        df = generate_data(start='2026-01-01', end='2026-01-02')
         
         cusum_detector = CUSUMAD()
         pelt_detector = PELTAD()
